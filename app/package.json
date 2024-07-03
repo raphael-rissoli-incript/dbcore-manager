@@ -1,0 +1,126 @@
+{
+  "name": "dbgate",
+  "version": "5.0.0-alpha.1",
+  "private": true,
+  "author": "Jan Prochazka <jenasoft.database@gmail.com>",
+  "description": "Opensource database administration tool",
+  "dependencies": {
+    "electron-log": "^4.4.1",
+    "electron-updater": "^4.6.1",
+    "lodash.clonedeepwith": "^4.5.0",
+    "patch-package": "^6.4.7"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dbgate/dbgate.git"
+  },
+  "build": {
+    "artifactName": "dbgate-${version}-${os}_${arch}.${ext}",
+    "appId": "org.dbgate",
+    "productName": "DbGate",
+    "afterSign": "electron-builder-notarize",
+    "asarUnpack": "**/*.node",
+    "mac": {
+      "category": "database",
+      "icon": "icon512-mac.png",
+      "hardenedRuntime": true,
+      "entitlements": "entitlements.mac.plist",
+      "entitlementsInherit": "entitlements.mac.plist",
+      "publish": [
+        "github"
+      ],
+      "target": {
+        "target": "default",
+        "arch": [
+          "universal",
+          "x64"
+        ]
+      }
+    },
+    "linux": {
+      "target": [
+        "deb",
+        "snap",
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64",
+            "armv7l",
+            "arm64"
+          ]
+        },
+        "tar.gz"
+      ],
+      "icon": "icons/",
+      "category": "Development",
+      "synopsis": "Database manager for SQL Server, MySQL, PostgreSQL, MongoDB and SQLite",
+      "publish": [
+        "github"
+      ]
+    },
+    "appImage": {
+      "license": "./LICENSE",
+      "category": "Development"
+    },
+    "snap": {
+      "publish": [
+        "github",
+        "snapStore"
+      ],
+      "environment": {
+        "ELECTRON_SNAP": "true"
+      }
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "icon": "icon.ico",
+      "publish": [
+        "github"
+      ],
+      "rfc3161TimeStampServer": "http://sha256timestamp.ws.symantec.com/sha256/timestamp"
+    },
+    "files": [
+      "packages",
+      "src",
+      "icon.png"
+    ]
+  },
+  "homepage": "./",
+  "scripts": {
+    "start": "cross-env ELECTRON_START_URL=http://localhost:5001 DEVMODE=1 electron .",
+    "start:local": "cross-env electron .",
+    "dist": "electron-builder",
+    "build": "cd ../packages/api && yarn build && cd ../web && yarn build && cd ../../app && yarn dist",
+    "build:local": "cd ../packages/api && yarn build && cd ../web && yarn build && cd ../../app && yarn predist",
+    "postinstall": "yarn rebuild && patch-package",
+    "rebuild": "electron-builder install-app-deps",
+    "predist": "copyfiles ../packages/api/dist/* packages && copyfiles \"../packages/web/public/*\" packages && copyfiles \"../packages/web/public/**/*\" packages && copyfiles --up 3 \"../plugins/dist/**/*\" packages/plugins"
+  },
+  "main": "src/electron.js",
+  "devDependencies": {
+    "copyfiles": "^2.2.0",
+    "cross-env": "^6.0.3",
+    "electron": "30.0.2",
+    "electron-builder": "23.1.0",
+    "electron-builder-notarize": "^1.5.2"
+  },
+  "optionalDependencies": {
+    "better-sqlite3": "9.6.0",
+    "msnodesqlv8": "^4.2.1"
+  }
+}
